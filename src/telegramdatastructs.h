@@ -232,7 +232,7 @@ typedef QList<QList<TelegramBotKeyboardButton>> TelegramKeyboard;
 
 // TelegramBotChat - This object represents a chat.
 struct TelegramBotChat : public TelegramBotObject {
-    qint32 id; // Unique identifier for this chat. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
+    qint64 id; // Unique identifier for this chat. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
     QString type; // Type of chat, can be either “private”, “group”, “supergroup” or “channel”
     QString title; // Optional. Title, for supergroups, channels and group chats
     QString username; // Optional. Username, for private chats, supergroups and channels if available
@@ -245,7 +245,7 @@ struct TelegramBotChat : public TelegramBotObject {
 
     // parse logic
     virtual void fromJson(QJsonObject& object) {
-        JsonHelperT<qint32>::jsonPathGet(object, "id", this->id);
+        JsonHelperT<qint64>::jsonPathGet(object, "id", this->id);
         JsonHelperT<QString>::jsonPathGet(object, "type", this->type);
         JsonHelperT<QString>::jsonPathGet(object, "title", this->title, false);
         JsonHelperT<QString>::jsonPathGet(object, "username", this->username, false);
@@ -444,12 +444,12 @@ struct TelegramBotChatMember : public TelegramBotObject {
 
 // TelegramBotResponseParameters - Contains information about why a request was unsuccessfull.
 struct TelegramBotResponseParameters : public TelegramBotObject {
-    qint32 migrateToChatId; // Optional. The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
+    qint64 migrateToChatId; // Optional. The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
     qint32 retryAfter; // Optional. In case of exceeding flood control, the number of seconds left to wait before the request can be repeated
 
     // parse logic
     virtual void fromJson(QJsonObject& object) {
-        JsonHelperT<qint32>::jsonPathGet(object, "migrate_to_chat_id", this->migrateToChatId, false);
+        JsonHelperT<qint64>::jsonPathGet(object, "migrate_to_chat_id", this->migrateToChatId, false);
         JsonHelperT<qint32>::jsonPathGet(object, "retry_after", this->retryAfter, false);
     }
 };
@@ -485,8 +485,8 @@ struct TelegramBotResponseParameters : public TelegramBotObject {
     bool groupChatCreated = false; /* Optional. Service message: the group has been created */\
     bool supergroupChatCreated = false; /* Optional. Service message: the supergroup has been created. This field can‘t be received in a message coming through updates, because bot can’t be a member of a supergroup when it is created. It can only be found in reply_to_message if someone replies to a very first message in a directly created supergroup. */\
     bool channelChatCreated = false; /* Optional. Service message: the channel has been created. This field can‘t be received in a message coming through updates, because bot can’t be a member of a channel when it is created. It can only be found in reply_to_message if someone replies to a very first message in a channel. */\
-    qint32 migrateToChatId; /* Optional. The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. */\
-    qint32 migrateFromChatId; /* Optional. The supergroup has been migrated from a group with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. */\
+    qint64 migrateToChatId; /* Optional. The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. */\
+    qint64 migrateFromChatId; /* Optional. The supergroup has been migrated from a group with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. */\
 
 #define TELEGRAMBOTMESSAGE_FIELD_PARSING \
     JsonHelperT<qint32>::jsonPathGet(object, "message_id", this->messageId); \
@@ -519,8 +519,8 @@ struct TelegramBotResponseParameters : public TelegramBotObject {
     JsonHelperT<bool>::jsonPathGet(object, "group_chat_created = false", this->groupChatCreated, false); \
     JsonHelperT<bool>::jsonPathGet(object, "supergroup_chat_created = false", this->supergroupChatCreated, false); \
     JsonHelperT<bool>::jsonPathGet(object, "channel_chat_created = false", this->channelChatCreated, false); \
-    JsonHelperT<qint32>::jsonPathGet(object, "migrate_to_chat_id", this->migrateToChatId, false); \
-    JsonHelperT<qint32>::jsonPathGet(object, "migrate_from_chat_id", this->migrateFromChatId, false);
+    JsonHelperT<qint64>::jsonPathGet(object, "migrate_to_chat_id", this->migrateToChatId, false); \
+    JsonHelperT<qint64>::jsonPathGet(object, "migrate_from_chat_id", this->migrateFromChatId, false);
 
 // TelegramBotMessageSingle - This object represents a message (without any recursive fields which references to same class, see TelegramBotMessage for complete message)
 struct TelegramBotMessageSingle : public TelegramBotObject {
@@ -1161,9 +1161,9 @@ struct TelegramBotUpdatePrivate : public TelegramBotObject {
     TelegramBotMessageType type = Undefined;
     int updateId;
 
-	// Contains the message for the following Update types:
-	// Message, EditedMessage, ChannelPost, EditedChannelPost, CallbackQuery
-	// Special Case: points also to the Message of a CallbackQuery!
+    // Contains the message for the following Update types:
+    // Message, EditedMessage, ChannelPost, EditedChannelPost, CallbackQuery
+    // Special Case: points also to the Message of a CallbackQuery!
     TelegramBotMessage*             message = 0;
     TelegramBotInlineQuery*         inlineQuery = 0;
     TelegramBotChosenInlineResult*  chosenInlineResult = 0;
