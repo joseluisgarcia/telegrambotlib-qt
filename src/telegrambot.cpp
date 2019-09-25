@@ -748,7 +748,7 @@ QNetworkReply* TelegramBot::callApi(QString method, QUrlQuery params, bool delet
     QUrl url(QString("https://api.telegram.org/bot%1/%2").arg(this->apiKey, method));
     url.setQuery(params);
 
-    qDebug() << url;
+    //qDebug() << url;
 
     // execute
     QNetworkRequest request(url);
