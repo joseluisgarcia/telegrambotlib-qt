@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     TelegramBot bot("APIKEY");
-    bot.sendMessage("Chat_ID", "Please <b>choose</b>", TelegramBot::Html, 0, {
+    bot.sendMessage("Chat_ID", "Please <b>choose</b>", TelegramBot::Html, TelegramBot::NoFlag, {
                             // row 1
                             {
                                 // columns
