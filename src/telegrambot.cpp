@@ -302,6 +302,7 @@ void TelegramBot::sendPhoto(QVariant chatId, QVariant photo, QString caption, in
     params.addQueryItem("chat_id", chatId.toString());
     if(!caption.isNull()) params.addQueryItem("caption", caption);
     if(flags && TelegramFlags::DisableNotfication) params.addQueryItem("disable_notification", "true");
+    if(flags && TelegramFlags::Markdown) params.addQueryItem("parse_mode", "Markdown");
     if(replyToMessageId) params.addQueryItem("reply_to_message_id", QString::number(replyToMessageId));
 
     // handle reply markup
@@ -708,10 +709,10 @@ void TelegramBot::parseMessage(QByteArray &data, bool singleMessage)
 
 void TelegramBot::handleServerWebhookResponse(HttpServerRequest request, HttpServerResponse response)
 {
-	// parse response
+    // parse response
     this->parseMessage(request->content, true);
 
-	// reply to server with status OK
+    // reply to server with status OK
     response->status = HttpServerResponsePrivate::OK;
 }
 
@@ -748,7 +749,7 @@ QNetworkReply* TelegramBot::callApi(QString method, QUrlQuery params, bool delet
     QUrl url(QString("https://api.telegram.org/bot%1/%2").arg(this->apiKey, method));
     url.setQuery(params);
 
-    //qDebug() << url;
+    //qDebug() << "Telegram ->" << url.toString(QUrl::None);
 
     // execute
     QNetworkRequest request(url);
@@ -760,6 +761,9 @@ QNetworkReply* TelegramBot::callApi(QString method, QUrlQuery params, bool delet
 
 QJsonObject TelegramBot::callApiJson(QString method, QUrlQuery params, QHttpMultiPart *multiPart)
 {
+
+    //qDebug() << "Telegram ->" << method << params.toString();
+
     // exec request
     QNetworkReply* reply = this->callApi(method, params, true, multiPart);
 
